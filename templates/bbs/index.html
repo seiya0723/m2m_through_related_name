@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>簡易掲示板</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+<body>
+
+    <main class="container">
+        <form method="POST">
+            {% csrf_token %}
+            <textarea class="form-control" name="comment"></textarea>
+            <input type="submit" value="送信">
+        </form>
+
+        <h2>トピック一覧</h2>
+
+        {% for topic in topics %}
+        <div class="border">
+            <div>投稿者:{{ topic.user }}</div>
+            <div>投稿日時:{{ topic.dt }}</div>
+            <div>コメント:{{ topic.comment }}</div>
+            <div>良いね:{{ topic.good.all|length }}
+                <form action="{% url 'bbs:good' topic.id  %}" method="POST" style="display:inline-block;">
+                    {% csrf_token %}
+                    <input type="submit" value="送信">           
+                </form>
+            </div>
+            <div>良いねした人: {% for good in topic.good.all %}{{ good }} {% endfor %}</div>
+            <div>悪いね:{{ topic.bad.all|length }}
+                <form action="{% url 'bbs:bad' topic.id  %}" method="POST" style="display:inline-block;">
+                    {% csrf_token %}
+                    <input type="submit" value="送信">
+                </form>
+            </div>
+            <div>悪いねした人: {% for bad in topic.bad.all %}{{ bad }} {% endfor %}</div>
+        </div>
+        {% endfor %}
+
+
+        <h2>ユーザー一覧</h2>
+
+        {% for user in users %}
+        <div class="border">
+            <div>ID:{{ user.id }}</div>
+            <div>ユーザー名:{{ user.username }}</div>
+            <div>投稿した回数:{{ user.posted_user.all|length }}</div>
+            <div>良いねした回数:{{ user.posted_good.all|length }}</div>
+            <div>悪いねした回数:{{ user.posted_bad.all|length }}</div>
+        </div>
+        {% endfor %}
+
+    </main>
+</body>
+</html>
+
